@@ -1,6 +1,8 @@
 import pygame
+import music
 from circleshape import CircleShape
 from constants import PLAYER_RADIUS, LINE_WIDTH, PLAYER_TURN_SPEED, PLAYER_SPEED, PLAYER_SHOOT_SPEED, PLAYER_SHOOT_COOLDOWN_SECONDS
+from constants import SCREEN_HEIGHT, SCREEN_WIDTH, MAGIC
 from shot import Shot
 
 class Player(CircleShape):
@@ -25,6 +27,15 @@ class Player(CircleShape):
         unit_vector = pygame.Vector2(0, 1)
         rotated_vector = unit_vector.rotate(self.rotation)
         self.position += rotated_vector * PLAYER_SPEED * dt 
+        if self.position.x > SCREEN_WIDTH + MAGIC:
+            self.position.x = -MAGIC
+        if self.position.x < -MAGIC:
+            self.position.x = SCREEN_WIDTH + MAGIC 
+        if self.position.y > SCREEN_HEIGHT + MAGIC:
+            self.position.y = -MAGIC 
+        if self.position.y < -MAGIC:
+            self.position.y = SCREEN_HEIGHT + MAGIC
+        
 
     def draw(self, screen: pygame.Surface) -> None:
         pygame.draw.polygon(screen, "white", self.triangle(), LINE_WIDTH)
@@ -32,6 +43,7 @@ class Player(CircleShape):
     def shoot(self) -> None:
         freedom = Shot(self.position.x, self.position.y)
         freedom.velocity = pygame.Vector2(0, 1).rotate(self.rotation) * PLAYER_SHOOT_SPEED
+        music.play_freedom()
 
     def update(self, dt: float) -> None:
         keys = pygame.key.get_pressed()
